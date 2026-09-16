@@ -2,6 +2,8 @@
 
 # 📄 安医 PDF 课件直链下载法
 
+[English](README.en.md) | 中文
+
 **安徽医科大学网络教学平台 · PDF 课件「直链」提取与下载**
 
 <img src="docs/assets/banner.svg" width="760" alt="安医 PDF 课件直链下载法" />
