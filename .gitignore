@@ -1,0 +1,21 @@
+# ---- OS ----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- Editors ----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- Node (若后续扩展脚本) ----
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# ---- 下载的课件（勿上传版权文件）----
+*.pdf
+*.pptx
+*.ppt
+downloads/
