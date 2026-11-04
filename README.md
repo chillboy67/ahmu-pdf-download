@@ -62,18 +62,14 @@
 
 ```mermaid
 flowchart TD
-    A["📄 打开 PDF 课件页面"] --> B["🔧 按 F12 打开浏览器控制台"]
-    B --> C["① 运行脚本<br/>读取 #pdf-viewer 的完整链接"]
-    C --> D{"拿到的是<br/>被编码过的长链接?"}
-    D -- "是" --> E["② decodeURIComponent<br/>连续解码两次"]
-    E --> F["🔍 在结果中定位<br/>file= 后面的那一段"]
-    F --> G["✂️ 掐头去尾<br/>得到纯净直链"]
-    G --> H["🌐 浏览器打开直链<br/>➜ 下载 PDF"]
-
-    style A fill:#e8f0fe,stroke:#2f6fed,color:#111
-    style H fill:#e6f4ea,stroke:#1e8e3e,color:#111
-    style E fill:#fef7e0,stroke:#f5a623,color:#111
+    A["打开 PDF 预览"] --> B["打开控制台"]
+    B --> C["读取预览地址"]
+    C --> D["解码预览地址"]
+    D --> E["提取文件链接"]
+    E --> F["打开链接下载"]
 ```
+
+> 每一步的具体命令见下方[操作步骤](#-操作步骤)。
 
 ---
 
