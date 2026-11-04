@@ -147,38 +147,58 @@
 })();
 ```
 
-### 方案二：连续请求下载当前活动的附件
+### 方案二：原始批量下载代码（连续请求当前活动的附件）
+
+下面保留最初使用的代码：遍历活动返回的全部附件，不按文件扩展名筛选；每份文件仍须通过详情接口的下载权限检查。与方案一不同，它不显示逐个下载面板，而是间隔一秒自动发起下一次请求。请仅对自己有权下载的课件使用。
 
 1. 按上面的方法进入附件所在的活动详情页，记下活动 ID。
 2. 打开开发者工具：Mac 按 `Command + Option + I`；Windows/Linux 按 `F12` 或 `Ctrl + Shift + I`。
 3. 在工具顶部点击 **Console（控制台）**，点击下方带 `>` 的输入区域。Chrome 如果阻止粘贴代码，先仔细阅读并理解代码及浏览器警告；确认后按提示启用粘贴。不要运行来源不明的代码。
-4. 复制下方完整代码到输入区，把第一行的 `67890` 改为自己的活动 ID，按 Enter。只处理当前活动中 PDF、PPT 或 PPTX 附件。
+4. 复制下方完整代码到输入区，把 `const activityId = 67890;` 中的数字改为自己的活动 ID，按 Enter。脚本只处理这一活动返回的附件，可能包含 PDF、PPTX 或其他格式。
 5. 如果 Chrome 询问是否允许多文件下载，确认站点后允许。等待控制台输出结果表格，再按 `Command + J`（Windows/Linux：`Ctrl + J`）查看 Chrome 下载记录。逐项核对文件名、数量、大小及文件能否打开。浏览器可能拦截弹窗、多文件下载或文件地址；“已请求下载”并不表示成功。失败的文件重新尝试或使用平台提供的下载入口。
 
 ```javascript
 (async () => {
-  const activityId = 67890; // 修改为当前活动的 ID
   const base = location.pathname.split('/course/')[0];
+  const activityId = 67890;
   const results = [];
-  const response = await fetch(`${base}/api/activities/${activityId}`);
-  if (!response.ok) {
-    console.error('读取活动失败：', response.status);
+
+  const activityResponse = await fetch(
+    `${base}/api/activities/${activityId}`
+  );
+
+  if (!activityResponse.ok) {
+    console.error('读取活动失败：', activityResponse.status);
     return;
   }
-  const activity = await response.json();
-  for (const item of activity.uploads.filter(x => /\.(pdf|pptx?)$/i.test(x.name))) {
+
+  const activity = await activityResponse.json();
+
+  for (const item of activity.uploads) {
     try {
       const detailResponse = await fetch(`${base}/api/uploads/${item.id}`);
-      if (!detailResponse.ok) throw new Error(`读取详情失败：${detailResponse.status}`);
+      if (!detailResponse.ok) {
+        throw new Error(`读取文件详情失败：${detailResponse.status}`);
+      }
+
       const detail = await detailResponse.json();
+
       if (detail.allow_download !== true) {
-        results.push({文件名: item.name, 结果: '跳过：文件详情未允许下载'});
+        results.push({
+          文件名: item.name,
+          结果: '跳过：文件详情未允许下载'
+        });
         continue;
       }
+
       const linkResponse = await fetch(`${base}/api/uploads/${item.id}/url`);
-      if (!linkResponse.ok) throw new Error(`获取链接失败：${linkResponse.status}`);
-      const {url} = await linkResponse.json();
+      if (!linkResponse.ok) {
+        throw new Error(`获取链接失败：${linkResponse.status}`);
+      }
+
+      const { url } = await linkResponse.json();
       if (!url) throw new Error('接口没有返回下载链接');
+
       const link = document.createElement('a');
       link.href = url;
       link.target = '_blank';
@@ -187,12 +207,21 @@
       document.body.appendChild(link);
       link.click();
       link.remove();
-      results.push({文件名: item.name, 结果: '已请求下载，请检查 Chrome 下载记录'});
+
+      results.push({
+        文件名: item.name,
+        结果: '已请求下载，请检查 Chrome 下载记录'
+      });
+
       await new Promise(resolve => setTimeout(resolve, 1000));
     } catch (error) {
-      results.push({文件名: item.name, 结果: error.message});
+      results.push({
+        文件名: item.name,
+        结果: error.message
+      });
     }
   }
+
   console.table(results);
 })();
 ```
