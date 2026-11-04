@@ -77,6 +77,8 @@ flowchart TD
 
 ---
 
+> 批量下载当前活动中允许下载的 PDF / PPTX 附件，请见[详细批量下载教程](docs/batch-download.md)。
+
 ## 🛠️ 操作步骤
 
 > 下面的脚本可直接复制到控制台回车运行，也可从 [`snippets/`](snippets) 目录取用。
