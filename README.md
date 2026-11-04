@@ -77,7 +77,7 @@ flowchart TD
 
 ---
 
-> 批量下载当前活动中允许下载的 PDF / PPTX 附件，请见[详细批量下载教程](docs/batch-download.md)。
+> 批量下载当前活动中允许下载的 PDF / PPTX 附件，或使用逐个下载面板，请见[详细批量下载教程](docs/batch-download.md)。
 
 ## 🛠️ 操作步骤
 
